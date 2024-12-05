@@ -63,29 +63,38 @@
 
     async function downloadBlob(url) {
         try {
-            const fetchResponse = await fetch(url, {method:'get'});
+            // 使用 fetch API 發送 GET 請求到指定的 URL
+            const fetchResponse = await fetch(url, { method: 'get' });
 
-            // 取得UTF8檔名
+            // 定義正則表達式，用於從 Content-Disposition 標頭中提取檔名
             const regexPattern = /filename\*?=\S*''([^;]*)/;
-            let filename = '';
+            let filename = ''; // 初始化檔名變數
+
+            // 遍歷響應標頭，尋找 Content-Disposition 標頭
             fetchResponse.headers.forEach((value, name) => {
+                // 檢查標頭名稱是否為 'content-disposition'（不區分大小寫）
                 if (name.toLowerCase() === 'content-disposition') {
+                    // 使用正則表達式匹配檔名
                     const match = value.match(regexPattern);
+                    // 如果匹配成功，解碼檔名並賦值；否則保持空字串
                     filename = decodeURI(match ? match[1] : '');
                 }
             });
 
+            // 構建響應數據對象
             const responseData = {
-                status: fetchResponse.status,
-                message: fetchResponse.status == 200 ? null : (await fetchResponse.text()),
-                body: fetchResponse.status == 200 ? (await fetchResponse.blob()) : null,
-                filename: filename
+                status: fetchResponse.status, // HTTP 狀態碼
+                message: fetchResponse.status == 200 ? null : (await fetchResponse.text()), // 錯誤消息（如果有）
+                body: fetchResponse.status == 200 ? (await fetchResponse.blob()) : null, // 響應的 Blob 數據（如果請求成功）
+                filename: filename // 提取的檔名
             };
 
+            // 返回響應數據對象
             return responseData;
         } catch (e) {
-            console.log(e)
-            return e;
+            // 捕獲異常並輸出到控制台
+            console.log(e);
+            return e; // 返回異常
         }
     }
 </script>
