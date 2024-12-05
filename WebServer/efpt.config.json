@@ -1,12 +1,12 @@
 ﻿{
    "CodeGenerationMode": 4,
-   "ContextClassName": "AIoTDBContext",
+   "ContextClassName": "NorthwindDBContext",
    "ContextNamespace": null,
    "FilterSchemas": false,
    "IncludeConnectionString": false,
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "Models\/AIoTDB",
+   "OutputPath": "Models\/NorthwindDB",
    "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "WebServer",
    "Schemas": null,
@@ -15,7 +15,55 @@
    "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "[dbo].[User]",
+         "Name": "[dbo].[Categories]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CustomerCustomerDemo]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CustomerDemographics]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Customers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Employees]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EmployeeTerritories]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Order Details]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Orders]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Products]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Region]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Shippers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Suppliers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Territories]",
          "ObjectType": 0
       }
    ],
@@ -24,6 +72,7 @@
    "UseAsyncStoredProcedureCalls": true,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": true,
+   "UseDatabaseNamesForRoutines": true,
    "UseDateOnlyTimeOnly": true,
    "UseDbContextSplitting": false,
    "UseDecimalDataAnnotationForSprocResult": true,

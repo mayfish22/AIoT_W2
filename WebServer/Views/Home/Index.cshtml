@@ -6,3 +6,87 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<button type="button" class="btn btn-primary" id="btnCSV">匯出CSV</button>
+
+<button type="button" class="btn btn-success" id="btnPDF">匯出PDF</button>
+
+@section Scripts{
+<script>
+    $(async()=>{
+        // 為 CSV 下載按鈕設置點擊事件處理程序
+        $(`#btnCSV`).on(`click`, async function(e) {
+            // 調用 downloadBlob 函數，請求下載 CSV 檔案
+            const result = await downloadBlob(`/Home/ExportCSV`);
+
+            // 檢查請求的狀態碼是否為 200（成功）
+            if (result.status == 200) {
+                // 創建一個隱藏的 <a> 標籤以觸發下載
+                const link = document.createElement('a');
+                // 使用 URL.createObjectURL 創建一個指向 Blob 的 URL
+                link.href = window.URL.createObjectURL(result.body);
+                // 設置下載的檔案名稱
+                link.download = result.filename;
+                // 模擬點擊連結以觸發下載
+                link.click();
+                // 下載後撤銷對象 URL，釋放資源
+                window.URL.revokeObjectURL(link.href);
+            } else {
+                // 如果請求失敗，顯示錯誤消息
+                window.alert(`下載檔案發生錯誤：${result.message}`);
+            }
+        });
+
+        // 為 PDF 下載按鈕設置點擊事件處理程序
+        $(`#btnPDF`).on(`click`, async function(e) {
+            // 調用 downloadBlob 函數，請求下載 PDF 檔案
+            const result = await downloadBlob(`/Home/ExportPDF`);
+
+            // 檢查請求的狀態碼是否為 200（成功）
+            if (result.status == 200) {
+                // 創建一個隱藏的 <a> 標籤以觸發下載
+                const link = document.createElement('a');
+                // 使用 URL.createObjectURL 創建一個指向 Blob 的 URL
+                link.href = window.URL.createObjectURL(result.body);
+                // 設置下載的檔案名稱
+                link.download = result.filename;
+                // 模擬點擊連結以觸發下載
+                link.click();
+                // 下載後撤銷對象 URL，釋放資源
+                window.URL.revokeObjectURL(link.href);
+            } else {
+                // 如果請求失敗，顯示錯誤消息
+                window.alert(`下載檔案發生錯誤：${result.message}`);
+            }
+        });
+    });
+
+    async function downloadBlob(url) {
+        try {
+            const fetchResponse = await fetch(url, {method:'get'});
+
+            // 取得UTF8檔名
+            const regexPattern = /filename\*?=\S*''([^;]*)/;
+            let filename = '';
+            fetchResponse.headers.forEach((value, name) => {
+                if (name.toLowerCase() === 'content-disposition') {
+                    const match = value.match(regexPattern);
+                    filename = decodeURI(match ? match[1] : '');
+                }
+            });
+
+            const responseData = {
+                status: fetchResponse.status,
+                message: fetchResponse.status == 200 ? null : (await fetchResponse.text()),
+                body: fetchResponse.status == 200 ? (await fetchResponse.blob()) : null,
+                filename: filename
+            };
+
+            return responseData;
+        } catch (e) {
+            console.log(e)
+            return e;
+        }
+    }
+</script>
+}
