@@ -5,6 +5,25 @@
     {
       "library": "bootstrap@5.2.3",
       "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "datatables.net-bs5@2.1.8",
+      "destination": "wwwroot/lib/datatables.net-bs5/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "datatables.net@2.1.8",
+      "destination": "wwwroot/lib/datatables.net/",
+      "files": [
+        "dataTables.min.js",
+        "dataTables.js"
+      ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "moment.js@2.30.1",
+      "destination": "wwwroot/lib/moment.js/"
     }
   ]
 }

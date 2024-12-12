@@ -65,5 +65,49 @@ namespace WebServer.Services
             // 返回所有的驗證訊息
             return result;
         }
+
+        /// <summary>
+        /// 驗證 UserViewModel 的資料
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="account"></param>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public IEnumerable<ValidatorMessage> ValidateUser(Guid id, string? account, string? email)
+        {
+            // 儲存驗證結果的列表
+            var result = new List<ValidatorMessage>();
+
+            // 檢查帳號是否重複
+            var accountDups = _aiot.User
+                .Where(s => !s.ID.Equals(id) && s.AccountNormalize == (account ?? "").Trim().ToUpper())
+                .Select(s => s);
+            if (accountDups.Any())
+            {
+                // 如果帳號已被使用，則添加驗證訊息
+                result.Add(new ValidatorMessage
+                {
+                    ElementID = "Account", // 對應的網頁元件ID
+                    Text = "帳號已被使用", // 驗證失敗的訊息
+                });
+            }
+
+            // 檢查電子郵件是否重複
+            var emailDups = _aiot.User
+                .Where(s => !s.ID.Equals(id) && s.EmailNormalize == (email ?? "").Trim().ToUpper())
+                .Select(s => s);
+            if (emailDups.Any())
+            {
+                // 如果電子郵件已被使用，則添加驗證訊息
+                result.Add(new ValidatorMessage
+                {
+                    ElementID = "Email", // 對應的網頁元件ID
+                    Text = "電子信箱已被使用", // 驗證失敗的訊息
+                });
+            }
+
+            // 返回所有的驗證訊息
+            return result;
+        }
     }
 }
