@@ -57,6 +57,10 @@
 
     <link rel="stylesheet" href="/lib/datatables.net-bs5/datatables.bootstrap5.css" asp-append-version="true" />
 
+    <link rel="stylesheet" href="/lib/select2/css/select2.css" asp-append-version="true">
+
+    <link rel="stylesheet" href="/lib/toastr.js/toastr.min.css" asp-append-version="true">
+
     @await RenderSectionAsync("Styles", required: false)
 </head>
 
@@ -479,63 +483,8 @@
                             </li>
 
                             <!-- User -->
-                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                                    <div class="avatar avatar-online">
-                                        <img src="/assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
-                                    </div>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <div class="d-flex">
-                                                <div class="flex-shrink-0 me-3">
-                                                    <div class="avatar avatar-online">
-                                                        <img src="/assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <span class="fw-semibold d-block">John Doe</span>
-                                                    <small class="text-muted">Admin</small>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-divider"></div>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="bx bx-user me-2"></i>
-                                            <span class="align-middle">My Profile</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="bx bx-cog me-2"></i>
-                                            <span class="align-middle">Settings</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <span class="d-flex align-items-center align-middle">
-                                                <i class="flex-shrink-0 bx bx-credit-card me-2"></i>
-                                                <span class="flex-grow-1 align-middle">Billing</span>
-                                                <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-divider"></div>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="/Account/Signout">
-                                            <i class="bx bx-power-off me-2"></i>
-                                            <span class="align-middle">登出</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
+                            @await Component.InvokeAsync("UserProfile")
+                            <vc:user-profile></vc:user-profile>
                             <!--/ User -->
                         </ul>
                     </div>
@@ -614,6 +563,13 @@
     <script src="/lib/datatables.net/datatables.js" asp-append-version="true"></script>
     <script src="/lib/datatables.net-bs5/datatables.bootstrap5.js" asp-append-version="true"></script>
     <script src="/lib/moment.js/moment.js" asp-append-version="true"></script>
+
+    <script src="/lib/select2/js/select2.js" asp-append-version="true"></script>
+    <script src="/lib/select2/js/i18n/zh-tw.js" asp-append-version="true"></script>
+
+    <script src="/lib/toastr.js/toastr.min.js" asp-append-version="true"></script>
+
+    <script src="/lib/microsoft-signalr/signalr.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -24,6 +24,21 @@
       "provider": "cdnjs",
       "library": "moment.js@2.30.1",
       "destination": "wwwroot/lib/moment.js/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "select2@4.0.13",
+      "destination": "wwwroot/lib/select2/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "toastr.js@2.1.4",
+      "destination": "wwwroot/lib/toastr.js/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "microsoft-signalr@8.0.7",
+      "destination": "wwwroot/lib/microsoft-signalr/"
     }
   ]
 }

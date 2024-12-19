@@ -1,11 +1,10 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
-using System.Configuration;
 using System.Text;
+using WebServer.Hubs;
 using WebServer.Models.AIoTDB;
 using WebServer.Models.NorthwindDB;
 using WebServer.Services;
@@ -178,6 +177,10 @@ public class Program
 
             builder.Services.AddScoped<JwtService>();
 
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddSignalR();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -249,6 +252,8 @@ public class Program
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapHub<ChatHub>("/chatHub");
 
             app.Run();
         }

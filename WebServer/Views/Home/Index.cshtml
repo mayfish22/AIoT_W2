@@ -1,101 +1,113 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    // Razor 頁面的開始部分，這裡可以放置 C# 代碼
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@section Styles {
+    <style>
+        /* 在這裡可以添加自定義樣式 */
+    </style>
+}
+
+<div class="container">
+    <div class="row">&nbsp;</div> <!-- 空行，用於分隔 -->
+
+    <div class="row">
+        <div class="col-2">User</div> <!-- 用戶標籤 -->
+        <div class="col-4">
+            <input type="text" id="userInput" /> <!-- 用戶輸入框 -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-2">Message</div> <!-- 消息標籤 -->
+        <div class="col-4">
+            <input type="text" id="messageInput" /> <!-- 消息輸入框 -->
+        </div>
+    </div>
+
+    <div class="row">&nbsp;</div> <!-- 空行，用於分隔 -->
+
+    <div class="row">
+        <div class="col-6">
+            <input type="button" id="sendButton" value="Send Message" /> <!-- 發送按鈕 -->
+        </div>
+    </div>
 </div>
 
-<button type="button" class="btn btn-primary" id="btnCSV">匯出CSV</button>
+<div class="row">
+    <div class="col-12">
+        <hr /> <!-- 分隔線 -->
+    </div>
+</div>
 
-<button type="button" class="btn btn-success" id="btnPDF">匯出PDF</button>
+<div class="row">
+    <div class="col-6">
+        <ul id="messagesList"></ul> <!-- 用於顯示消息的列表 -->
+    </div>
+</div>
 
-@section Scripts{
-<script>
-    $(async()=>{
-        // 為 CSV 下載按鈕設置點擊事件處理程序
-        $(`#btnCSV`).on(`click`, async function(e) {
-            // 調用 downloadBlob 函數，請求下載 CSV 檔案
-            const result = await downloadBlob(`/Home/ExportCSV`);
+@section Scripts {
+    <script>
+        $(async () => {
+            // 設定 SignalR 連線
+            var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-            // 檢查請求的狀態碼是否為 200（成功）
-            if (result.status == 200) {
-                // 創建一個隱藏的 <a> 標籤以觸發下載
-                const link = document.createElement('a');
-                // 使用 URL.createObjectURL 創建一個指向 Blob 的 URL
-                link.href = window.URL.createObjectURL(result.body);
-                // 設置下載的檔案名稱
-                link.download = result.filename;
-                // 模擬點擊連結以觸發下載
-                link.click();
-                // 下載後撤銷對象 URL，釋放資源
-                window.URL.revokeObjectURL(link.href);
-            } else {
-                // 如果請求失敗，顯示錯誤消息
-                window.alert(`下載檔案發生錯誤：${result.message}`);
-            }
-        });
+            // 先讓送出按鈕不可使用，直到連線建立
+            document.getElementById("sendButton").disabled = true;
 
-        // 為 PDF 下載按鈕設置點擊事件處理程序
-        $(`#btnPDF`).on(`click`, async function(e) {
-            // 調用 downloadBlob 函數，請求下載 PDF 檔案
-            const result = await downloadBlob(`/Home/ExportPDF`);
+            // 當接收到 ReceiveMessage 時執行的函數
+            connection.on("ReceiveMessage", function (user, message) {
+                console.log({user, message}); // 在控制台輸出接收到的用戶和消息
 
-            // 檢查請求的狀態碼是否為 200（成功）
-            if (result.status == 200) {
-                // 創建一個隱藏的 <a> 標籤以觸發下載
-                const link = document.createElement('a');
-                // 使用 URL.createObjectURL 創建一個指向 Blob 的 URL
-                link.href = window.URL.createObjectURL(result.body);
-                // 設置下載的檔案名稱
-                link.download = result.filename;
-                // 模擬點擊連結以觸發下載
-                link.click();
-                // 下載後撤銷對象 URL，釋放資源
-                window.URL.revokeObjectURL(link.href);
-            } else {
-                // 如果請求失敗，顯示錯誤消息
-                window.alert(`下載檔案發生錯誤：${result.message}`);
-            }
-        });
-    });
+                // 設定 toastr 的選項
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right", // 通知顯示位置
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
 
-    async function downloadBlob(url) {
-        try {
-            // 使用 fetch API 發送 GET 請求到指定的 URL
-            const fetchResponse = await fetch(url, { method: 'get' });
-
-            // 定義正則表達式，用於從 Content-Disposition 標頭中提取檔名
-            const regexPattern = /filename\*?=\S*''([^;]*)/;
-            let filename = ''; // 初始化檔名變數
-
-            // 遍歷響應標頭，尋找 Content-Disposition 標頭
-            fetchResponse.headers.forEach((value, name) => {
-                // 檢查標頭名稱是否為 'content-disposition'（不區分大小寫）
-                if (name.toLowerCase() === 'content-disposition') {
-                    // 使用正則表達式匹配檔名
-                    const match = value.match(regexPattern);
-                    // 如果匹配成功，解碼檔名並賦值；否則保持空字串
-                    filename = decodeURI(match ? match[1] : '');
+                // 根據發送者顯示不同的通知
+                if (document.getElementById("userInput").value == user) {
+                    // 如果是自己發送的消息
+                    toastr["success"](`${message}`, `你說：`);
+                } else {
+                    // 如果是其他用戶發送的消息
+                    toastr["info"](`${message}`, `${user} 說：`);
                 }
             });
 
-            // 構建響應數據對象
-            const responseData = {
-                status: fetchResponse.status, // HTTP 狀態碼
-                message: fetchResponse.status == 200 ? null : (await fetchResponse.text()), // 錯誤消息（如果有）
-                body: fetchResponse.status == 200 ? (await fetchResponse.blob()) : null, // 響應的 Blob 數據（如果請求成功）
-                filename: filename // 提取的檔名
-            };
+            // 開始連線
+            connection.start().then(function () {
+                // 連線成功後啟用送出按鈕
+                document.getElementById("sendButton").disabled = false;
+            }).catch(function (err) {
+                // 如果連線失敗，顯示錯誤
+                return console.error(err.toString());
+            });
 
-            // 返回響應數據對象
-            return responseData;
-        } catch (e) {
-            // 捕獲異常並輸出到控制台
-            console.log(e);
-            return e; // 返回異常
-        }
-    }
-</script>
+            // 設定送出按鈕的點擊事件
+            document.getElementById("sendButton").addEventListener("click", function (event) {
+                var user = document.getElementById("userInput").value; // 獲取用戶名
+                var message = document.getElementById("messageInput").value; // 獲取消息內容
+                // 調用 SignalR Hub 的 SendMessage 方法，將用戶名和消息發送到伺服器
+                connection.invoke("SendMessage", user, message).catch(function (err) {
+                    // 如果發送失敗，顯示錯誤
+                    return console.error(err.toString());
+                });
+                event.preventDefault(); // 防止表單提交
+            });
+        });
+    </script>
 }
