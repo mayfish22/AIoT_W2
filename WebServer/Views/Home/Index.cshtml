@@ -12,7 +12,7 @@
     <div class="row">&nbsp;</div> <!-- 空行，用於分隔 -->
 
     <div class="row">
-        <div class="col-2">User</div> <!-- 用戶標籤 -->
+        <div class="col-2">Connection ID</div> <!-- 用戶標籤 -->
         <div class="col-4">
             <input type="text" id="userInput" /> <!-- 用戶輸入框 -->
         </div>
@@ -56,8 +56,8 @@
             document.getElementById("sendButton").disabled = true;
 
             // 當接收到 ReceiveMessage 時執行的函數
-            connection.on("ReceiveMessage", function (user, message) {
-                console.log({user, message}); // 在控制台輸出接收到的用戶和消息
+            connection.on("ReceiveMessageForUser", function (message) {
+                console.log({message}); // 在控制台輸出接收到的用戶和消息
 
                 // 設定 toastr 的選項
                 toastr.options = {
@@ -78,14 +78,7 @@
                     "hideMethod": "fadeOut"
                 };
 
-                // 根據發送者顯示不同的通知
-                if (document.getElementById("userInput").value == user) {
-                    // 如果是自己發送的消息
-                    toastr["success"](`${message}`, `你說：`);
-                } else {
-                    // 如果是其他用戶發送的消息
-                    toastr["info"](`${message}`, `${user} 說：`);
-                }
+                toastr["success"](`${message}`, `新消息：`);
             });
 
             // 開始連線
@@ -99,10 +92,10 @@
 
             // 設定送出按鈕的點擊事件
             document.getElementById("sendButton").addEventListener("click", function (event) {
-                var user = document.getElementById("userInput").value; // 獲取用戶名
+                var connectionId = document.getElementById("userInput").value; // 獲取用戶名
                 var message = document.getElementById("messageInput").value; // 獲取消息內容
                 // 調用 SignalR Hub 的 SendMessage 方法，將用戶名和消息發送到伺服器
-                connection.invoke("SendMessage", user, message).catch(function (err) {
+                connection.invoke("SendMessageForUser", connectionId, message).catch(function (err) {
                     // 如果發送失敗，顯示錯誤
                     return console.error(err.toString());
                 });
