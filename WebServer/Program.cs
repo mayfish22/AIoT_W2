@@ -181,6 +181,9 @@ public class Program
 
             builder.Services.AddSignalR();
 
+            //使用 記憶體快取（In-Memory Cache）
+            builder.Services.AddMemoryCache(); 
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

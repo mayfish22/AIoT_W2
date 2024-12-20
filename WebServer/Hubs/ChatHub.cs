@@ -4,6 +4,9 @@ using System.Text.Json;
 using Serilog;
 using WebServer.Models.AIoTDB;
 using System.Security.Claims;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Org.BouncyCastle.Tls;
 
 namespace WebServer.Hubs;
 
@@ -11,10 +14,12 @@ public class ChatHub : Hub
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AIoTDBContext _aiot;
-    public ChatHub(IHttpContextAccessor httpContextAccessor, AIoTDBContext aiot)
+    private readonly IMemoryCache _cache;
+    public ChatHub(IHttpContextAccessor httpContextAccessor, AIoTDBContext aiot, IMemoryCache cache)
     {
         _httpContextAccessor = httpContextAccessor;
         _aiot = aiot;
+        _cache = cache;
     }
 
     public async Task SendMessage(string user, string message)
@@ -22,9 +27,12 @@ public class ChatHub : Hub
         await Clients.All.SendAsync("ReceiveMessage", user, message);
     }
 
-    public async Task SendMessageForUser(string connectionId, string message)
+    public async Task SendMessageForAccount(string account, string message)
     {
-        await Clients.Client(connectionId).SendAsync("ReceiveMessageForUser", message);
+        if (_cache.TryGetValue((account??string.Empty).Trim().ToUpper(), out string value))
+        {
+            await Clients.Client(value).SendAsync("ReceiveMessageForAccount", message);
+        }
     }
     /// <summary>
     /// 連線
@@ -52,12 +60,12 @@ public class ChatHub : Hub
                     {
                         var userProfile = await _aiot.User.FindAsync(userId);
                         Log.Information($"User Account：{userProfile.Account}");
+                        Log.Information($"ConnectionId：{Context.ConnectionId}");
+                        //記錄連線
+                        _cache.Set(userProfile.AccountNormalize, Context.ConnectionId);
                     } 
                 }
             }
-
-            Log.Information($"ConnectionId：{Context.ConnectionId}");
-
         }
         catch (Exception ex)
         {

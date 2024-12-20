@@ -12,7 +12,7 @@
     <div class="row">&nbsp;</div> <!-- 空行，用於分隔 -->
 
     <div class="row">
-        <div class="col-2">Connection ID</div> <!-- 用戶標籤 -->
+        <div class="col-2">Account</div> <!-- 用戶標籤 -->
         <div class="col-4">
             <input type="text" id="userInput" /> <!-- 用戶輸入框 -->
         </div>
@@ -56,7 +56,7 @@
             document.getElementById("sendButton").disabled = true;
 
             // 當接收到 ReceiveMessage 時執行的函數
-            connection.on("ReceiveMessageForUser", function (message) {
+            connection.on("ReceiveMessageForAccount", function (message) {
                 console.log({message}); // 在控制台輸出接收到的用戶和消息
 
                 // 設定 toastr 的選項
@@ -92,10 +92,10 @@
 
             // 設定送出按鈕的點擊事件
             document.getElementById("sendButton").addEventListener("click", function (event) {
-                var connectionId = document.getElementById("userInput").value; // 獲取用戶名
+                var account = document.getElementById("userInput").value; // 獲取用戶名
                 var message = document.getElementById("messageInput").value; // 獲取消息內容
                 // 調用 SignalR Hub 的 SendMessage 方法，將用戶名和消息發送到伺服器
-                connection.invoke("SendMessageForUser", connectionId, message).catch(function (err) {
+                connection.invoke("SendMessageForAccount", account, message).catch(function (err) {
                     // 如果發送失敗，顯示錯誤
                     return console.error(err.toString());
                 });
